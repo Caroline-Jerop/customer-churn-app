@@ -1,13 +1,51 @@
 import streamlit as st
-import yaml
 from yaml.loader import SafeLoader
+import yaml
 import streamlit_authenticator as stauth
+
 
 st .set_page_config(
     page_title="Customer Churn Prediction App",
     page_icon='🏠',
     layout="wide",
 )
+
+# initialize session state for authentication
+
+# Function to initialize session state for authentication
+def initialize_authentication():
+    with open('config.yaml') as file:
+        config = yaml.load(file, Loader=SafeLoader)
+
+    authenticator = stauth.Authenticate(
+        config['credentials'],
+        config['cookie']['name'],
+        config['cookie']['key'],
+        config['cookie']['expiry_days'],
+        config['pre-authorized']
+    )
+
+    authenticator.login(location='sidebar')
+    return authenticator
+
+# Call the function to initialize authentication
+authenticator = initialize_authentication()
+
+if st.session_state.get("authentication_status"):
+    authenticator.logout(location='sidebar')
+    st.write(f'Welcome *{st.session_state["name"]}*', location='sidebar')
+    st.markdown("<h1 style='color: skyblue;'>CUSTOMER CHURN PREDICTION APP</h1>", unsafe_allow_html=True)
+elif st.session_state.get("authentication_status") is False:
+    st.error('Username/password is incorrect')
+elif st.session_state.get("authentication_status") is None:
+    st.warning('Please enter your username and password')
+    st.info('Login to access Prediction Application')
+    st.code('''
+        Login Credentials for Test Account:
+        Username: Test user
+        Password: user123''')
+
+
 
 # Main content
 st.title("Customer Churn Prediction App")

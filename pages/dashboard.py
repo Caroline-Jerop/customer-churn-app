@@ -28,7 +28,7 @@ authenticator = stauth.Authenticate(
 # Load data
 @st.cache_data()
 def load_data():
-    data = pd.read_csv('Data/customer_churn_clean_data.csv')
+    data = pd.read_csv(r'C:\Users\HP\OneDrive\Desktop\Github projects\customer-churn-app\Data\customer_data.csv')
     return data
 
 data = load_data()
@@ -124,12 +124,3 @@ def eda_dashboard():
         st.plotly_chart(boxplot)
 
         
-
-
-if __name__ == '__main__':
-    if st.session_state["authentication_status"]:
-        authenticator.logout(location='sidebar')
-
-        select_dashboard()
-    else:	
-        st.info('Login in the Home page to access Dashboard')

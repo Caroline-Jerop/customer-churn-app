@@ -1,0 +1,16 @@
+credentials:
+  usernames:
+    test_user:
+      email: Carojerop95@gmail.com
+      failed_login_attempts: 0 
+      logged_in: False 
+      name: Test user
+      password: user123 
+
+cookie:
+  expiry_days: 30
+  key: some_signature_key 
+  name: some_cookie_name
+pre-authorized:
+  emails:
+  - carojerop95@gmail.com
