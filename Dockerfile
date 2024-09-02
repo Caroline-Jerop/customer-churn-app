@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-WORKDIR /usr/app/src
+WORKDIR /usr/home
 
 ARG LANG = "en_US.UTF-8"
 
@@ -21,4 +21,4 @@ COPY ./ ./
 
 
 # Tell the image what to do
-CMD ["strealit"."run","app.py"]
+CMD ["strealit"."run","home.py"]

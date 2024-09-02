@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 import plotly.express as px
 import yaml
 from yaml.loader import  SafeLoader
@@ -28,11 +29,25 @@ authenticator = stauth.Authenticate(
 
 
 # load the dataset
-data = pd.read_csv(r"C:\Users\HP\OneDrive\Desktop\Github projects\customer-churn-app\Data\customer_data.csv")
+# Load the dataset
+def load_data():
+    # Get the base directory of the current script
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    # Construct the path to the CSV file
+    file_path = os.path.join(base_dir, "..", "Data", "customer_data.csv")
+    
+    # Check if the file exists (debugging purpose)
+    if not os.path.exists(file_path):
+        st.error(f"File not found: {file_path}")
+    
+    # Load the CSV file into a DataFrame
+    data = pd.read_csv(file_path)
+    return data
 
-import streamlit as st
-import plotly.express as px
-import pandas as pd
+# Display the data
+data = load_data()
+st.dataframe(data)
+
 
 
 
@@ -94,3 +109,4 @@ def select_dashboard():
 
 if __name__ == '__main__':
     select_dashboard()
+

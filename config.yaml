@@ -4,8 +4,8 @@ credentials:
       email: Carojerop95@gmail.com
       failed_login_attempts: 0 
       logged_in: False 
-      name: Test user
-      password: user123 
+      name: username
+      password: z1y2x3 
 
 cookie:
   expiry_days: 30

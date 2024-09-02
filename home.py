@@ -42,9 +42,8 @@ elif st.session_state.get("authentication_status") is None:
     st.info('Login to access Prediction Application')
     st.code('''
         Login Credentials for Test Account:
-        Username: Test user
-        Password: user123''')
-
+        Username:username
+        Password:z1y2x3''')
 
 
 # Main content

@@ -34,8 +34,8 @@ elif st.session_state["authentication_status"] is None:
     st.info('Login to access Prediction Application')
     st.code('''
         Login Credentials for Test Account:
-        Username: Test user
-        Password: user123''')
+        Username:username
+        Password:z1y2x3''')
 
 if st.session_state["authentication_status"]:
     st.markdown("<h1 style='color: skyblue;'>CUSTOMER CHURN PREDICTION APP</h1>", unsafe_allow_html=True)
@@ -56,9 +56,9 @@ def select_model():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.write("### Choose your preferred model")
+        st.write("### Choose a model")
         model_options = ['XGB Classifier', 'Logistic Regressor']
-        model_choice = st.selectbox('Select model', ['Choose an option'] + model_options, index=0, key='selected_model')
+        model_choice = st.selectbox('model', ['Choose an option'] + model_options, index=0, key='model')
 
     with col2:
         pass
@@ -76,6 +76,8 @@ def select_model():
         encoder = None
 
     return pipeline, encoder, threshold
+
+
 
 def make_predictions(pipeline, encoder, threshold):
     columns = ['gender', 'seniorcitizen', 'partner', 'dependents', 'tenure',
@@ -97,11 +99,17 @@ def make_predictions(pipeline, encoder, threshold):
 
     df = pd.DataFrame(data, columns=columns)
 
-    probability = pipeline.predict_proba(df)
-    pred = (probability[:, 1] >= threshold).astype(int)
-    pred = int(pred[0])
-    prediction = encoder.inverse_transform([pred])[0]
+    # Ensure pipeline is a complete model pipeline (with preprocessor and classifier)
+    try:
+        probability = pipeline.predict_proba(df)
+        pred = (probability[:, 1] >= threshold).astype(int)
+        pred = int(pred[0])
+        prediction = encoder.inverse_transform([pred])[0]
+    except AttributeError as e:
+        st.error("Pipeline is not correctly set up. Please check the model and try again.")
+        return
 
+    # Store prediction history and display the result
     history_df = df.copy()
     now = datetime.datetime.now()
     date = now.date()
@@ -121,6 +129,9 @@ def make_predictions(pipeline, encoder, threshold):
 
     return prediction, probability
 
+
+
+
 def selectbox_with_placeholder(label, options, key):
     placeholder = 'Choose an option'
     selected = st.selectbox(label, [placeholder] + options, key=key)
@@ -132,27 +143,31 @@ def form(pipeline, encoder, threshold):
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            tenure = st.number_input('Months of tenure', min_value=1, max_value=72, key='tenure')
+            
+            monthly_charges = st.number_input('Monthly charges', min_value=18, max_value=119, step=1, key='monthlycharges')
+            total_charges = st.number_input('Total charges', min_value=18, max_value=8671, step=1, key='totalcharges')
+            paymentmethod = selectbox_with_placeholder('Payment method', ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'], key='paymentmethod')
             gender = selectbox_with_placeholder('Gender', ['Male', 'Female'], key='gender')
             senior_citizen = selectbox_with_placeholder('Senior Citizen', ['Yes', 'No'], key='senior_citizen')
             partner = selectbox_with_placeholder('Has a partner', ['Yes', 'No'], key='partner')
             dependents = selectbox_with_placeholder('Has dependents', ['Yes', 'No'], key='dependents')
-            phoneservice = selectbox_with_placeholder('Has phone service', ['Yes', 'No'], key='phoneservice')
-            paymentmethod = selectbox_with_placeholder('Payment method', ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'], key='paymentmethod')
+            
+            
 
         with col2:
-            monthly_charges = st.number_input('Monthly charges', min_value=18, max_value=119, step=1, key='monthlycharges')
+            tenure = st.number_input('Months of tenure', min_value=1, max_value=72, key='tenure')
             internetservice = selectbox_with_placeholder('Internet service', ['DSL', 'Fiber optic', 'No'], key='internetservice')
             onlinesecurity = selectbox_with_placeholder('Online security', ['Yes', 'No', 'No internet service'], key='onlinesecurity')
             onlinebackup = selectbox_with_placeholder('Online backup', ['Yes', 'No', 'No internet service'], key='onlinebackup')
             deviceprotection = selectbox_with_placeholder('Device protection', ['Yes', 'No', 'No internet service'], key='deviceprotection')
             techsupport = selectbox_with_placeholder('Tech support', ['Yes', 'No', 'No internet service'], key='techsupport')  
+            phoneservice = selectbox_with_placeholder('Has phone service', ['Yes', 'No'], key='phoneservice')
         
+
         with col3:
-            total_charges = st.number_input('Total charges', min_value=18, max_value=8671, step=1, key='totalcharges')
+            contract = selectbox_with_placeholder('Type of contract', ['Month-to-month', 'One year', 'Two year'], key='contract')
             streamingtv = selectbox_with_placeholder('Streaming TV', ['Yes', 'No', 'No internet service'], key='streamingtv')
             streamingmovies = selectbox_with_placeholder('Streaming movies', ['Yes', 'No', 'No internet service'], key='streamingmovies')
-            contract = selectbox_with_placeholder('Type of contract', ['Month-to-month', 'One year', 'Two year'], key='contract')
             paperlessbilling = selectbox_with_placeholder('Paperless billing', ['Yes', 'No'], key='paperlessbilling')
             multiplelines = selectbox_with_placeholder('Multiple lines', ['Yes', 'No', 'No phone service'], key='multiplelines')
         
@@ -191,4 +206,6 @@ if pipeline and encoder and threshold:
                 st.markdown('Probability of retention: {:.2f}%'.format(probability[0][0] * 100))
             else:
                 st.markdown('No prediction made yet.')
+
+
 
